@@ -57,6 +57,19 @@
     footer{ color:var(--muted); font-size:13px; text-align:center }
     /* Defensive visibility helper */
     [data-vis="hidden"]{ display:none !important; }
+
+    .table{ table-layout:fixed; width:100%; }
+    .table th,.table td{ word-break:break-word; white-space:normal; }
+    @media(max-width:480px){
+      .table th,.table td{ padding:6px 4px; font-size:14px; }
+      .card{ padding:12px; }
+    }
+
+
+    /* Let the lexicon block size to its content while still filling available width */
+    details.card{ width:100%; }
+    details.card[open] > table#lexicon{ width:100%; }
+
   </style>
 </head>
 <body>
@@ -221,12 +234,11 @@ const I18N = {
     start:"Aloita uusi kierros", reviewLast:"Harjoittele edelliset virheet", reset:"Nollaa tallennettu tulos",
     roundFinished:"Kierros valmis", reviewThisRound:"Kertaa tämän kierroksen virheet", playAgain:"Pelaa uudelleen",
     tipMC:"Vinkki: voit myös painaa A–D.", hint:"Å/Ä/Ö täytyy kirjoittaa oikein – ei oikopolkuja!",
+    expertHint:"Kirjoita muodot täsmälleen oikein (å/ä/ö vaaditaan).",
     lexiconTitle:"Sanasto",
     labels:{ base:"perusmuoto", pres:"preesens", pret:"imperfekti", supine:"supiini", fi:"suomeksi", en:"englanniksi" },
-    promptBasic:(srcName,srcVal,dstName)=>`Mikä on verbin ${srcName} <b>${srcVal}</b> ${dstName}?`,
-    // Special-case grammar fix requested: "Mikä on verbi juosta ruotsiksi?"
-    promptFiToSvBase: fi => `Mikä on verbi <b>${fi}</b> ruotsiksi?`,
-    promptFiAll:fi=>`Kirjoita ruotsiksi: <b>${fi}</b> – kaikki muodot (infinitiivi, preesens, imperfekti, supiini).`,
+    promptBasic:(srcName,srcVal,dstName)=>`Mikä on ${srcName} <b>${srcVal}</b> → ${dstName}?`,
+    promptFiAll:fi=>`Kirjoita ruotsiksi: <b>${fi}</b> – kaikki muodot (perusmuoto, preesens, imperfekti, supiini).`,
     promptSwComplete:(srcName,srcVal)=>`Täydennä (${srcName}): <b>${srcVal}</b>. Kirjoita puuttuvat muodot ja merkitys suomeksi.`,
     noPrev:"Ei aiempaa kierrosta", skipped:"Ohitettu. Oikea: ", qLabel:"K", scoreLabel:"Pisteet",
     correct:"Oikein!", wrong:r=>`Väärin. Oikea: ${r}`, nothingToReview:"Ei kerrattavaa – kaikki oikein!",
@@ -238,11 +250,12 @@ const I18N = {
     start:"Start new round", reviewLast:"Practice last mistakes", reset:"Reset saved score",
     roundFinished:"Round finished", reviewThisRound:"Review this round's mistakes", playAgain:"Play again",
     tipMC:"Tip: You can also press A–D.", hint:"Å/Ä/Ö must be typed as-is. No cheating!",
+    expertHint:"Type the forms exactly (å/ä/ö required).",
     lexiconTitle:"Lexicon",
     labels:{ base:"infinitive", pres:"present", pret:"preterite", supine:"supine", fi:"Finnish", en:"English" },
-    promptBasic:(srcName,srcVal,dstName)=>`Given ${srcName} <b>${srcVal}</b>, what is the <b>${dstName}</b>?`,
-    promptFiAll:fi=>`Give all Swedish forms for Finnish verb <b>${fi}</b> (infinitive, present, preterite, supine).`,
-    promptSwComplete:(srcName,srcVal)=>`Complete (${srcName}): <b>${srcVal}</b>. Enter the missing forms and the Finnish meaning.`,
+    promptBasic:(srcName,srcVal,dstName)=>`Given the ${srcName} <b>${srcVal}</b>, what's the <b>${dstName}</b>?`,
+    promptFiAll:enVerb=>`Give all Swedish forms for the verb <b>${enVerb}</b> (infinitive, present, preterite, supine).`,
+    promptSwComplete:(srcName,srcVal)=>`Complete (${srcName}): <b>${srcVal}</b>. Enter the missing forms and the English meaning.`,
     noPrev:"No previous round", skipped:"Skipped. Correct: ", qLabel:"Q", scoreLabel:"Score",
     correct:"Correct!", wrong:r=>`Wrong. Correct: ${r}`, nothingToReview:"Nothing to review – all correct!",
     noMistakesSaved:"No mistakes saved from the last round.", clearConfirm:"Clear saved last score?",
@@ -265,6 +278,7 @@ function renderLanguage(){
   $("#againBtn").textContent = I18N[state.lang].playAgain;
   $("#mcTip").textContent = I18N[state.lang].tipMC;
   $("#hint").textContent = I18N[state.lang].hint;
+  $("#expertHint").textContent = I18N[state.lang].expertHint;
   $("#lexiconTitle").textContent = I18N[state.lang].lexiconTitle;
   $("#lang-fi").classList.toggle("active", state.lang==='fi');
   $("#lang-en").classList.toggle("active", state.lang==='en');
@@ -295,21 +309,12 @@ function renderLexicon(){
 }
 
 /* ======= ROUND / QUESTIONS ======= */
-// Expanded variety for Easy/Normal; language-aware gloss field (fi/en).
 function pairsForMode(){
-  const gloss = state.lang==='fi' ? 'fi' : 'en';
   if(state.mode==='hard'){
-    const keys=['base','pres','pret','supine', gloss];
-    const out=[]; for(const a of keys){ for(const b of keys){ if(a!==b) out.push([a,b]); } }
-    return out;
+    const keys=['base','pres','pret','supine', state.lang==='fi'?'fi':'en'];
+    const out=[]; for(const a of keys){ for(const b of keys){ if(a!==b) out.push([a,b]); } } return out;
   }
-  // Easy & Normal: broader, but curated, mix
-  return [
-    ['base','pres'],['base','pret'],['base','supine'],
-    ['pres','pret'],['pret','pres'],
-    ['pres','base'],['pret','base'],['supine','base'],
-    [gloss,'base'],['base',gloss]
-  ];
+  return [['base','pres'],['base','pret'],['base','supine']];
 }
 function sampleOptions(correct,field,k=4,groupArray){
   const pool = groupArray.map(v=>toArr(v[field])[0]).filter(x=>norm(x)!==norm(correct));
@@ -320,27 +325,11 @@ function sampleOptions(correct,field,k=4,groupArray){
 function newRound(fromWrong=null){
   state.reviewing=false; state.answers=[]; state.idx=0;
   const group=GROUPS[state.groupIndex]; const items=[];
-  const used = new Set(); // prevent duplicate questions in a 10-question session
-
   if(state.mode==='expert'){
-    let tries = 0;
-    while(items.length<10 && tries<1000){
-      tries++;
-      const v=rand(group);
-      const pick=Math.random()<0.5 ? 'fi' : rand(['base','pres','pret','supine']);
-      if(pick==='fi'){
-        const key=`expert|${v.base}|fi`;
-        if(used.has(key)) continue;
-        used.add(key);
-        items.push({ v, mode:'expert', clue:'fi', need:['base','pres','pret','supine'] });
-      } else {
-        const all=['base','pres','pret','supine'];
-        const missing=all.filter(x=>x!==pick);
-        const key=`expert|${v.base}|${pick}`;
-        if(used.has(key)) continue;
-        used.add(key);
-        items.push({ v, mode:'expert', clue:pick, need:[...missing,'fi'] });
-      }
+    for(let i=0;i<10;i++){
+      const v=rand(group); const pick=Math.random()<0.5?'fi':rand(['base','pres','pret','supine']);
+      if(pick==='fi') items.push({ v, mode:'expert', clue:'fi', need:['base','pres','pret','supine'] });
+      else { const all=['base','pres','pret','supine']; const missing=all.filter(x=>x!==pick); items.push({ v, mode:'expert', clue:pick, need:[...missing,'fi'] }); }
     }
   } else if(fromWrong && fromWrong.length){
     fromWrong.forEach(w=>{
@@ -348,13 +337,11 @@ function newRound(fromWrong=null){
     });
   } else {
     const pairs=pairsForMode();
-    let tries=0;
-    while(items.length<10 && tries<2000){
-      tries++;
+    const seen=new Set();
+    while(items.length<10){
       const v=rand(group); const [src,dst]=rand(pairs);
       const key=`${v.base}|${src}|${dst}`;
-      if(used.has(key)) continue;
-      used.add(key);
+      if(seen.has(key)) continue; seen.add(key);
       items.push({ v, src, dst, mode: state.mode==='easy'?'easy':'typed' });
     }
   }
@@ -377,7 +364,8 @@ function renderQuestion(){
 
   if(qmode==='expert'){
     if(q.clue==='fi'){
-      $("#prompt").innerHTML = t.promptFiAll(q.v.fi);
+      const fiOrEn = state.lang==='en' ? q.v.en : q.v.fi;
+      $("#prompt").innerHTML = t.promptFiAll(fiOrEn);
       ['base','pres','pret','supine'].forEach(addExpertField);
     } else {
       const srcVal = toArr(q.v[q.clue])[0];
@@ -386,12 +374,7 @@ function renderQuestion(){
     }
   } else if(qmode==='easy'){
     const srcVal = toArr(q.v[q.src])[0];
-    // Special Finnish grammar fix for fi -> base:
-    if(state.lang==='fi' && q.src==='fi' && q.dst==='base'){
-      $("#prompt").innerHTML = I18N.fi.promptFiToSvBase(q.v.fi); // "Mikä on verbi juosta ruotsiksi?"
-    } else {
-      $("#prompt").innerHTML = t.promptBasic(labelFor(q.src), srcVal, labelFor(q.dst));
-    }
+    $("#prompt").innerHTML = t.promptBasic(labelFor(q.src), srcVal, labelFor(q.dst));
     const right = toArr(q.v[q.dst])[0];
     const opts = sampleOptions(right, q.dst, 4, GROUPS[state.groupIndex]);
     const letters=['A','B','C','D'];
@@ -400,13 +383,9 @@ function renderQuestion(){
       b.addEventListener('click',()=>grade(txt)); $("#choices").appendChild(b);
     });
     window.onkeydown=(e)=>{ const k=e.key.toUpperCase(); const pos=letters.indexOf(k); if(pos>-1 && document.querySelector('#mcRow').getAttribute('data-vis')==='shown'){ grade(opts[pos]); } };
-  } else { // typed (Normal/Hard when not expert)
+  } else { // typed
     const srcVal = toArr(q.v[q.src])[0];
-    if(state.lang==='fi' && q.src==='fi' && q.dst==='base'){
-      $("#prompt").innerHTML = I18N.fi.promptFiToSvBase(q.v.fi);
-    } else {
-      $("#prompt").innerHTML = t.promptBasic(labelFor(q.src), srcVal, labelFor(q.dst));
-    }
+    $("#prompt").innerHTML = t.promptBasic(labelFor(q.src), srcVal, labelFor(q.dst));
     $("#answer").value=""; $("#answer").focus();
     window.onkeydown=(e)=>{ if(e.key==='Enter' && document.querySelector('#typeRow').getAttribute('data-vis')==='shown') submit(); };
   }
