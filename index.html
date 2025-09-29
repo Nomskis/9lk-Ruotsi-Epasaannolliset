@@ -223,7 +223,10 @@ const I18N = {
     tipMC:"Vinkki: voit myös painaa A–D.", hint:"Å/Ä/Ö täytyy kirjoittaa oikein – ei oikopolkuja!",
     lexiconTitle:"Sanasto",
     labels:{ base:"perusmuoto", pres:"preesens", pret:"imperfekti", supine:"supiini", fi:"suomeksi", en:"englanniksi" },
-    promptBasic:(srcName,srcVal,dstName)=>`Mikä on verbin ${srcName} <b>${srcVal}</b> ${dstName}?`,
+
+    /* ✅ CHANGED: put the example form first, drop the srcName label */
+    promptBasic:(srcName,srcVal,dstName)=>`Mikä on verbin <b>${srcVal}</b> ${dstName}?`,
+
     promptFiAll:fi=>`Kirjoita ruotsiksi: <b>${fi}</b> – kaikki muodot (infinitiivi, preesens, imperfekti, supiini).`,
     promptSwComplete:(srcName,srcVal)=>`Täydennä (${srcName}): <b>${srcVal}</b>. Kirjoita puuttuvat muodot ja merkitys suomeksi.`,
     noPrev:"Ei aiempaa kierrosta", skipped:"Ohitettu. Oikea: ", qLabel:"K", scoreLabel:"Pisteet",
@@ -317,7 +320,7 @@ function newRound(fromWrong=null){
     }
   } else if(fromWrong && fromWrong.length){
     fromWrong.forEach(w=>{
-      items.push({ v: group.find(x=>x.base===(w.v?.base||w.base))||VERBS.find(x=>x.base===(w.v?.base||w.base)), src:w.src, dst:w.dst, mode:'typed' });
+      items.push({ v: group.find(x=>x.base===(w.v?.base||w.base))||VERBS.find(x=>x.base===(w.v?.base||w.base)), src:w.src, dst:w.dst, mode: state.mode==='easy'?'easy':'typed' });
     });
   } else {
     const pairs=pairsForMode();
