@@ -1,0 +1,425 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Swedish Irregular Verbs – Practice Game (bli → rida)</title>
+  <style>
+    :root {
+      --bg: #0f172a; --panel:#0b1220; --card:#111827; --text:#e5e7eb; --muted:#94a3b8;
+      --accent:#38bdf8; --ok:#22c55e; --bad:#ef4444; --warn:#f59e0b; --line:#1f2937;
+    }
+    * { box-sizing: border-box }
+    body {
+      margin: 0; background: radial-gradient(1200px 800px at 80% -10%,#1f2937 0%, var(--bg) 60%);
+      color: var(--text); font: 16px/1.5 system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      min-height: 100dvh; display: grid; place-items: start center; padding: clamp(12px, 3vw, 28px);
+    }
+    .app { width: min(980px, 100%); display: grid; gap: 14px; }
+    .card { background: color-mix(in srgb, var(--card) 92%, black); border: 1px solid var(--line);
+            border-radius: 18px; padding: 18px; box-shadow: 0 10px 30px rgba(0,0,0,.35); }
+    h1 { margin: 0 0 4px; font-weight: 800; letter-spacing: .2px; font-size: clamp(22px, 3.4vw, 34px); }
+    p.lead { margin: 0; color: var(--muted) }
+    .row { display: grid; gap: 12px; grid-template-columns: 1fr; }
+    @media (min-width: 760px) { .row{ grid-template-columns: 1fr 1fr; } }
+    .controls { display:flex; flex-wrap:wrap; gap:10px; align-items:center }
+    .chip { display:inline-flex; align-items:center; gap:8px; border:1px solid #273142; padding:8px 12px; border-radius:999px; background:#0b1220 }
+    .chip input { accent-color: var(--accent) }
+    .btn { cursor:pointer; appearance:none; border:1px solid #2563eb22; color:var(--text);
+           background: linear-gradient(180deg,#1f2937,#0b1220); padding:12px 14px; border-radius:14px;
+           font-weight:600; letter-spacing:.2px; box-shadow: inset 0 1px 0 rgba(255,255,255,.06), 0 6px 16px rgba(0,0,0,.25); }
+    .btn:active{ transform: translateY(1px) }
+    .btn.ghost { background: transparent; border-color: #334155 }
+    .pill { padding: 4px 10px; border-radius: 999px; border:1px solid #334155; font-size: 12px; color: var(--muted) }
+    .prompt { font-size: clamp(18px, 2.6vw, 24px); font-weight:700; }
+    .prompt small { color:var(--muted); font-weight:500 }
+    .input-row { display:flex; gap:10px; }
+    input[type=text] { flex:1; border:1px solid #334155; background:#0a0f1a; color:var(--text); padding:12px 14px; border-radius:12px; font-size:18px }
+    .status { min-height: 28px; font-weight:600 }
+    .status.ok { color: var(--ok) } .status.bad{ color: var(--bad) }
+    .tiny { color: var(--muted); font-size: 13px }
+    .table { width:100%; border-collapse: collapse; }
+    .table th, .table td { border-bottom: 1px dashed #243244; padding: 8px 6px; text-align:left; vertical-align: top }
+    .kbd { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 12px; padding:2px 6px; border:1px solid #374151; border-bottom-width:2px; background:#0b1220; border-radius:6px }
+    .choices { display:grid; grid-template-columns: 1fr; gap:10px; margin-top:8px }
+    @media (min-width: 640px) { .choices{ grid-template-columns: 1fr 1fr } }
+    .choice { border:1px solid #334155; border-radius:12px; padding:10px 12px; cursor:pointer; background:#0a0f1a }
+    .choice.correct { outline:2px solid var(--ok) } .choice.wrong { outline:2px solid var(--bad) }
+    .flex { display:flex; gap:8px; align-items:center; flex-wrap: wrap }
+    .right { margin-left: auto }
+    details summary { cursor: pointer }
+    footer { color: var(--muted); font-size: 13px; text-align: center; margin-top: 8px }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="card">
+      <h1>Swedish Irregular Verbs – Practice (bli → rida)</h1>
+      <p class="lead">10 questions per round · pick difficulty · review mistakes · last score saved locally.</p>
+    </header>
+
+    <section class="card">
+      <div class="controls">
+        <span>Difficulty:</span>
+        <label class="chip"><input type="radio" name="diff" value="easy" checked> Easy (multiple choice)</label>
+        <label class="chip"><input type="radio" name="diff" value="normal"> Normal (type answer)</label>
+        <label class="chip"><input type="radio" name="diff" value="hard"> Hard (any to any)</label>
+        <span class="pill" id="lastScore">No previous round</span>
+        <button class="btn right" id="startBtn">Start new round</button>
+        <button class="btn ghost" id="reviewLastBtn" title="Practice the mistakes from the last finished round">Practice last mistakes</button>
+        <button class="btn ghost" id="resetBtn" title="Clear saved last score">Reset saved score</button>
+      </div>
+    </section>
+
+    <section class="card" id="game" hidden>
+      <div class="flex">
+        <div class="pill" id="qpos">Q 1/10</div>
+        <div class="pill" id="scoreBox">Score 0/0</div>
+      </div>
+      <div class="prompt" id="prompt">Prompt will appear here</div>
+
+      <div class="input-row" id="typeRow">
+        <input type="text" id="answer" placeholder="Type your answer…" autocomplete="off" />
+        <button class="btn" id="submitBtn">Submit</button>
+        <button class="btn ghost" id="skipBtn" title="Reveal and move on">Skip</button>
+      </div>
+
+      <div id="mcRow" hidden>
+        <div class="choices" id="choices"></div>
+        <div class="tiny">Tip: You can also press <span class="kbd">A</span>, <span class="kbd">B</span>, <span class="kbd">C</span>, <span class="kbd">D</span>.</div>
+      </div>
+
+      <div class="status" id="status"></div>
+      <div class="tiny" id="hint">Å/Ä/Ö accepted; you can type A/A/O as well.</div>
+    </section>
+
+    <section class="card" id="results" hidden>
+      <h2>Round finished</h2>
+      <p id="summary"></p>
+      <div class="flex">
+        <button class="btn" id="reviewBtn">Review this round's mistakes</button>
+        <button class="btn ghost" id="againBtn">Play again</button>
+      </div>
+    </section>
+
+    <details class="card">
+      <summary><strong>Lexicon (bli → rida)</strong></summary>
+      <table class="table" id="lexicon"></table>
+    </details>
+
+    <footer>Made for practice – data includes Finnish meanings to help recall.</footer>
+  </main>
+
+  <script>
+    // ---------------------- Data ----------------------
+    const VERBS = [
+      { base: 'bli',    pres:'blir',   pret:['blev'],           supine:['blivit'],       fi:'tulla jksikin' },
+      { base: 'dricka', pres:'dricker',pret:['drack'],          supine:['druckit'],      fi:'juoda' },
+      { base: 'falla',  pres:'faller', pret:['föll'],           supine:['fallit'],       fi:'kaatua' },
+      { base: 'finnas', pres:'finns',  pret:['fanns'],          supine:['funnits'],      fi:'olla olemassa' },
+      { base: 'flyga',  pres:'flyger', pret:['flög'],           supine:['flugit'],       fi:'lentää' },
+      { base: 'få',     pres:'får',    pret:['fick'],           supine:['fått'],         fi:'saada' },
+      { base: 'förstå', pres:'förstår',pret:['förstod'],        supine:['förstått'],     fi:'ymmärtää' },
+      { base: 'ge',     pres:'ger',    pret:['gav'],            supine:['gett','givit'], fi:'antaa' },
+      { base: 'gråta',  pres:'gråter', pret:['grät'],           supine:['gråtit'],       fi:'itkeä' },
+      { base: 'gå',     pres:'går',    pret:['gick'],           supine:['gått'],         fi:'kävellä, mennä' },
+      { base: 'göra',   pres:'gör',    pret:['gjorde'],         supine:['gjort'],        fi:'tehdä' },
+      { base: 'ha',     pres:'har',    pret:['hade'],           supine:['haft'],         fi:'olla, omistaa' },
+      { base: 'heta',   pres:'heter',  pret:['hette'],          supine:['hetat'],        fi:'olla nimeltään' },
+      { base: 'komma',  pres:'kommer', pret:['kom'],            supine:['kommit'],       fi:'tulla' },
+      { base: 'kunna',  pres:'kan',    pret:['kunde'],          supine:['kunnat'],       fi:'osata, voida' },
+      { base: 'le',     pres:'ler',    pret:['log'],            supine:['lett'],         fi:'hymyillä' },
+      { base: 'ligga',  pres:'ligger', pret:['låg'],            supine:['legat'],        fi:'maata, sijaita' },
+      { base: 'låta',   pres:'låter',  pret:['lät'],            supine:['låtit'],        fi:'kuulostaa' },
+      { base: 'lägga',  pres:'lägger', pret:['lade','la'],      supine:['lagt'],         fi:'laittaa, asettaa' },
+      { base: 'rida',   pres:'rider',  pret:['red'],            supine:['ridit'],        fi:'ratsastaa' },
+    ];
+
+    const LABELS = {
+      base: "infinitive",
+      pres: "present",
+      pret: "preterite (imperfekti)",
+      supine: "supine (4th form)",
+      fi: "Finnish meaning",
+    };
+
+    const FIELD_KEYS = ["base","pres","pret","supine","fi"];
+
+    // ---------------------- Helpers ----------------------
+    const $ = sel => document.querySelector(sel);
+    const $$ = sel => Array.from(document.querySelectorAll(sel));
+    const rand = arr => arr[Math.floor(Math.random()*arr.length)];
+    const toArr = x => Array.isArray(x) ? x : [x];
+
+    function normalize(s){
+      return (s||"").trim().toLowerCase()
+        .replaceAll("å","a").replaceAll("ä","a").replaceAll("ö","o")
+        .replaceAll("é","e").replaceAll("ü","u").replaceAll(" ", "");
+    }
+
+    function isCorrect(user, answers){
+      const u = normalize(user);
+      return answers.some(a => normalize(a) === u);
+    }
+
+    function sampleOptions(correct, field, k=4){
+      // get pool of values for same field
+      const pool = VERBS.map(v => {
+        const val = v[field];
+        return Array.isArray(val) ? val[0] : val;
+      }).filter(x => normalize(x) !== normalize(correct));
+      const picks = [];
+      while(picks.length < Math.min(k-1, pool.length)){
+        const p = rand(pool);
+        if(!picks.includes(p)) picks.push(p);
+      }
+      const opts = [...picks, correct];
+      // shuffle
+      for(let i=opts.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [opts[i],opts[j]]=[opts[j],opts[i]]; }
+      return opts;
+    }
+
+    function formatQ(v, src, dst){
+      const srcVal = toArr(v[src])[0];
+      return `Given <b>${LABELS[src]}</b> <b>${srcVal}</b>, what is the <b>${LABELS[dst]}</b>?`;
+    }
+
+    // ---------------------- Game state ----------------------
+    const store = {
+      saveLast(result){
+        localStorage.setItem("sv_last", JSON.stringify(result));
+      },
+      loadLast(){
+        try { return JSON.parse(localStorage.getItem("sv_last")||"null"); } catch { return null; }
+      },
+      clear(){ localStorage.removeItem("sv_last"); }
+    };
+
+    const state = {
+      mode: "easy",
+      round: [],        // [{v, src, dst}]
+      answers: [],      // [{ok, right, user, v, src, dst}]
+      idx: 0,
+      reviewing: false,
+    };
+
+    function setMode(val){ state.mode = val; }
+
+    function buildPairs(){
+      if(state.mode === "hard"){
+        const pairs = [];
+        for(const a of FIELD_KEYS){
+          for(const b of FIELD_KEYS){
+            if(a!==b) pairs.push([a,b]);
+          }
+        }
+        return pairs;
+      }
+      // normal/easy: from base to others
+      return [["base","pres"],["base","pret"],["base","supine"]];
+    }
+
+    function newRound(fromWrong=null){
+      state.reviewing = false;
+      state.answers = [];
+      state.idx = 0;
+      const pairs = buildPairs();
+      let items = [];
+      if(fromWrong && fromWrong.length){
+        // practice only given items
+        items = fromWrong.map(w => ({ v: w.v, src: w.src, dst: w.dst }));
+      } else {
+        for(let i=0;i<10;i++){
+          const v = rand(VERBS);
+          const [src,dst] = rand(pairs);
+          items.push({v, src, dst});
+        }
+      }
+      state.round = items;
+      $("#results").hidden = true;
+      $("#game").hidden = false;
+      renderQuestion();
+    }
+
+    function renderQuestion(){
+      const q = state.round[state.idx];
+      if(!q){ return showResults(); }
+      $("#qpos").textContent = `Q ${state.idx+1}/${state.round.length}`;
+      $("#scoreBox").textContent = `Score ${state.answers.filter(a=>a.ok).length}/${state.answers.length}`;
+      $("#prompt").innerHTML = formatQ(q.v, q.src, q.dst);
+      $("#status").textContent = "";
+      $("#answer").value = "";
+      $("#answer").focus();
+
+      const isMC = state.mode === "easy" && !state.reviewing;
+      $("#typeRow").hidden = isMC;
+      $("#mcRow").hidden = !isMC;
+      $("#choices").innerHTML = "";
+      if(isMC){
+        const right = toArr(q.v[q.dst])[0];
+        const opts = sampleOptions(right, q.dst, 4);
+        const letters = ["A","B","C","D"];
+        opts.forEach((txt, i) => {
+          const btn = document.createElement("button");
+          btn.className = "choice";
+          btn.innerHTML = `<span class="pill" style="margin-right:8px">${letters[i]}</span> ${txt}`;
+          btn.addEventListener("click", () => grade(txt));
+          $("#choices").appendChild(btn);
+        });
+        // keyboard shortcuts
+        window.onkeydown = (e)=>{
+          const k = e.key.toUpperCase();
+          const pos = letters.indexOf(k);
+          if(pos>-1 && $("#mcRow").hidden===false){
+            const opt = opts[pos];
+            grade(opt);
+          }
+        };
+      } else {
+        window.onkeydown = (e)=>{
+          if(e.key==="Enter" && !$("#typeRow").hidden) submit();
+        };
+      }
+    }
+
+    function submit(){ grade($("#answer").value); }
+    $("#submitBtn").addEventListener("click", submit);
+    $("#skipBtn").addEventListener("click", () => {
+      const q = state.round[state.idx];
+      const right = toArr(q.v[q.dst]).join(" / ");
+      $("#status").className = "status bad";
+      $("#status").textContent = `Skipped. Correct: ${right}`;
+      state.answers.push({ok:false, right, user:"", v:q.v, src:q.src, dst:q.dst});
+      nextSoon();
+    });
+
+    function grade(userInput){
+      const q = state.round[state.idx];
+      const rightList = toArr(q.v[q.dst]);
+      const ok = isCorrect(userInput, rightList);
+      const right = rightList.join(" / ");
+      state.answers.push({ ok, right, user:userInput, v:q.v, src:q.src, dst:q.dst });
+
+      if(state.mode==="easy" && !state.reviewing){
+        // mark choices
+        const nodes = $$("#choices .choice");
+        for(const n of nodes){
+          const txt = n.textContent.trim().replace(/^[A-D]\s*/,"");
+          if(isCorrect(txt, rightList)) n.classList.add("correct");
+          if(!ok && normalize(txt)===normalize(userInput)) n.classList.add("wrong");
+          n.disabled = true;
+        }
+      }
+
+      $("#status").className = "status " + (ok ? "ok" : "bad");
+      $("#status").textContent = ok ? "Correct!" : `Wrong. Correct: ${right}`;
+      nextSoon();
+    }
+
+    function nextSoon(){
+      setTimeout(() => {
+        state.idx++;
+        if(state.idx < state.round.length) renderQuestion();
+        else showResults();
+      }, 650);
+    }
+
+    function showResults(){
+      $("#game").hidden = true;
+      $("#results").hidden = false;
+      const total = state.answers.length;
+      const correct = state.answers.filter(a=>a.ok).length;
+      const wrong = state.answers.filter(a=>!a.ok);
+      const modeName = state.mode[0].toUpperCase()+state.mode.slice(1);
+      const last = store.loadLast();
+      let improvement = "";
+      if(last && typeof last.score==="number" && typeof last.total==="number"){
+        const diff = correct - last.score;
+        const sign = diff>=0 ? "+" : "";
+        improvement = ` (vs last: ${last.difficulty} ${last.score}/${last.total}, ${sign}${diff})`;
+      }
+      $("#summary").innerHTML = `Score: <b>${correct}/${total}</b> · Difficulty: <b>${modeName}</b>${improvement}`;
+
+      // Save last
+      const saved = {
+        score: correct, total,
+        difficulty: modeName,
+        time: new Date().toISOString(),
+        wrong: wrong.map(w => ({ base:w.v.base, src:w.src, dst:w.dst, right:w.right }))
+      };
+      store.saveLast(saved);
+      renderLastBadge();
+
+      // Hook review button
+      $("#reviewBtn").onclick = () => {
+        if(!wrong.length){ alert("Nothing to review – all correct!"); return; }
+        startReview(wrong);
+      };
+      $("#againBtn").onclick = () => newRound();
+    }
+
+    function startReview(wrongList){
+      // Build items from wrong list (type answers only)
+      state.reviewing = true;
+      state.idx = 0;
+      state.answers = [];
+      state.round = wrongList.map(w => {
+        // `w` may be objects from this round or from saved store
+        let v = VERBS.find(x => x.base === (w.v?.base || w.base));
+        return { v, src: w.src, dst: w.dst };
+      });
+      $("#results").hidden = true;
+      $("#game").hidden = false;
+      $("#mcRow").hidden = true; // typed only in review
+      renderQuestion();
+    }
+
+    function renderLastBadge(){
+      const last = store.loadLast();
+      if(last){
+        $("#lastScore").textContent = `${last.difficulty} ${last.score}/${last.total} — ${new Date(last.time).toLocaleString()}`;
+      } else {
+        $("#lastScore").textContent = "No previous round";
+      }
+    }
+
+    // --------- Lexicon table ----------
+    function buildLexicon(){
+      const table = $("#lexicon");
+      table.innerHTML = `<tr>
+        <th>Infinitive</th><th>Present</th><th>Preterite</th><th>Supine</th><th>Finnish</th>
+      </tr>` + VERBS.map(v => `<tr>
+        <td><b>${v.base}</b></td>
+        <td>${toArr(v.pres).join(" / ")}</td>
+        <td>${toArr(v.pret).join(" / ")}</td>
+        <td>${toArr(v.supine).join(" / ")}</td>
+        <td>${v.fi}</td>
+      </tr>`).join("");
+    }
+
+    // --------- Wire up ----------
+    $("#startBtn").addEventListener("click", () => {
+      const checked = document.querySelector('input[name="diff"]:checked');
+      setMode(checked.value);
+      newRound();
+    });
+    $("#reviewLastBtn").addEventListener("click", () => {
+      const last = store.loadLast();
+      if(!last || !last.wrong || !last.wrong.length){
+        alert("No mistakes saved from the last round.");
+        return;
+      }
+      startReview(last.wrong);
+    });
+    $("#resetBtn").addEventListener("click", () => {
+      if(confirm("Clear saved last score?")){ store.clear(); renderLastBadge(); }
+    });
+
+    $("#submitBtn").addEventListener("click", submit);
+    $("#answer").addEventListener("keyup", e => { if(e.key==="Enter") submit(); });
+
+    buildLexicon();
+    renderLastBadge();
+  </script>
+</body>
+</html>
