@@ -1,425 +1,452 @@
 <!doctype html>
-<html lang="en">
+<html lang="fi">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Swedish Irregular Verbs – Practice Game (bli → rida)</title>
+  <title>Ruotsin epäsäännölliset verbit – Kertauspeli</title>
   <style>
-    :root {
-      --bg: #0f172a; --panel:#0b1220; --card:#111827; --text:#e5e7eb; --muted:#94a3b8;
-      --accent:#38bdf8; --ok:#22c55e; --bad:#ef4444; --warn:#f59e0b; --line:#1f2937;
+    :root{
+      --bg:#0f172a; --panel:#0b1220; --card:#111827; --text:#e5e7eb; --muted:#94a3b8;
+      --accent:#38bdf8; --ok:#22c55e; --bad:#ef4444; --line:#1f2937;
     }
-    * { box-sizing: border-box }
-    body {
-      margin: 0; background: radial-gradient(1200px 800px at 80% -10%,#1f2937 0%, var(--bg) 60%);
-      color: var(--text); font: 16px/1.5 system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
-      min-height: 100dvh; display: grid; place-items: start center; padding: clamp(12px, 3vw, 28px);
+    *{ box-sizing:border-box }
+    html,body{ height:100% }
+    body{
+      margin:0; color:var(--text); background:radial-gradient(1200px 800px at 50% -10%,#1f2937 0%,var(--bg) 60%);
+      font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+      display:flex; align-items:center; justify-content:center; padding:clamp(10px,3vw,28px);
     }
-    .app { width: min(980px, 100%); display: grid; gap: 14px; }
-    .card { background: color-mix(in srgb, var(--card) 92%, black); border: 1px solid var(--line);
-            border-radius: 18px; padding: 18px; box-shadow: 0 10px 30px rgba(0,0,0,.35); }
-    h1 { margin: 0 0 4px; font-weight: 800; letter-spacing: .2px; font-size: clamp(22px, 3.4vw, 34px); }
-    p.lead { margin: 0; color: var(--muted) }
-    .row { display: grid; gap: 12px; grid-template-columns: 1fr; }
-    @media (min-width: 760px) { .row{ grid-template-columns: 1fr 1fr; } }
-    .controls { display:flex; flex-wrap:wrap; gap:10px; align-items:center }
-    .chip { display:inline-flex; align-items:center; gap:8px; border:1px solid #273142; padding:8px 12px; border-radius:999px; background:#0b1220 }
-    .chip input { accent-color: var(--accent) }
-    .btn { cursor:pointer; appearance:none; border:1px solid #2563eb22; color:var(--text);
-           background: linear-gradient(180deg,#1f2937,#0b1220); padding:12px 14px; border-radius:14px;
-           font-weight:600; letter-spacing:.2px; box-shadow: inset 0 1px 0 rgba(255,255,255,.06), 0 6px 16px rgba(0,0,0,.25); }
-    .btn:active{ transform: translateY(1px) }
-    .btn.ghost { background: transparent; border-color: #334155 }
-    .pill { padding: 4px 10px; border-radius: 999px; border:1px solid #334155; font-size: 12px; color: var(--muted) }
-    .prompt { font-size: clamp(18px, 2.6vw, 24px); font-weight:700; }
-    .prompt small { color:var(--muted); font-weight:500 }
-    .input-row { display:flex; gap:10px; }
-    input[type=text] { flex:1; border:1px solid #334155; background:#0a0f1a; color:var(--text); padding:12px 14px; border-radius:12px; font-size:18px }
-    .status { min-height: 28px; font-weight:600 }
-    .status.ok { color: var(--ok) } .status.bad{ color: var(--bad) }
-    .tiny { color: var(--muted); font-size: 13px }
-    .table { width:100%; border-collapse: collapse; }
-    .table th, .table td { border-bottom: 1px dashed #243244; padding: 8px 6px; text-align:left; vertical-align: top }
-    .kbd { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 12px; padding:2px 6px; border:1px solid #374151; border-bottom-width:2px; background:#0b1220; border-radius:6px }
-    .choices { display:grid; grid-template-columns: 1fr; gap:10px; margin-top:8px }
-    @media (min-width: 640px) { .choices{ grid-template-columns: 1fr 1fr } }
-    .choice { border:1px solid #334155; border-radius:12px; padding:10px 12px; cursor:pointer; background:#0a0f1a }
-    .choice.correct { outline:2px solid var(--ok) } .choice.wrong { outline:2px solid var(--bad) }
-    .flex { display:flex; gap:8px; align-items:center; flex-wrap: wrap }
-    .right { margin-left: auto }
-    details summary { cursor: pointer }
-    footer { color: var(--muted); font-size: 13px; text-align: center; margin-top: 8px }
+    .app{ width:min(1000px,100%); display:flex; flex-direction:column; gap:14px }
+    .card{ background:color-mix(in srgb, var(--card) 92%, black);
+           border:1px solid var(--line); border-radius:18px; padding:clamp(12px,2.5vw,18px);
+           box-shadow:0 10px 30px rgba(0,0,0,.35); }
+    h1{ margin:0; font-weight:800; letter-spacing:.2px; font-size:clamp(22px,4.6vw,34px) }
+    .muted{ color:var(--muted) }
+    .row{ display:flex; align-items:center; gap:10px; flex-wrap:wrap }
+    .spacer{ flex:1 }
+    .btn{ cursor:pointer; appearance:none; border:1px solid #2563eb22; color:var(--text);
+          background:linear-gradient(180deg,#1f2937,#0b1220); padding:10px 12px; border-radius:14px;
+          font-weight:700; letter-spacing:.2px; box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 6px 16px rgba(0,0,0,.25); }
+    .btn.ghost{ background:transparent; border-color:#334155; font-weight:600 }
+    .flag{ display:inline-flex; align-items:center; gap:8px; padding:6px 10px; border:1px solid #334155;
+           border-radius:999px; background:#0b1220; color:var(--text); cursor:pointer }
+    .flag.active{ outline:2px solid var(--accent) }
+    .flag svg{ width:22px; height:16px; display:block; border-radius:3px }
+    .seg{ display:inline-flex; background:#0b1220; border:1px solid #334155; border-radius:999px; overflow:hidden }
+    .seg button{ border:0; background:transparent; padding:8px 12px; color:var(--muted); cursor:pointer; font-weight:600 }
+    .seg button.active{ color:var(--text); background:#0a0f1a }
+    .pill{ padding:4px 10px; border-radius:999px; border:1px solid #334155; font-size:12px; color:var(--muted); white-space:nowrap }
+    .groups{ display:flex; flex-wrap:wrap; gap:8px }
+    .groupBtn{ padding:8px 10px; border-radius:10px; border:1px solid #334155; background:#0b1220; color:var(--text); cursor:pointer }
+    .groupBtn.active{ outline:2px solid var(--accent) }
+    .prompt{ font-size:clamp(18px,4.5vw,24px); font-weight:400; margin:6px 0 0 } /* only verb is bold via <b> */
+    .choices{ display:grid; grid-template-columns:1fr; gap:10px; margin-top:8px }
+    @media(min-width:640px){ .choices{ grid-template-columns:1fr 1fr } }
+    .choice{ border:1px solid #334155; border-radius:12px; padding:10px 12px; cursor:pointer; background:#0a0f1a; color:var(--text); text-align:left }
+    .choice.correct{ outline:2px solid var(--ok) } .choice.wrong{ outline:2px solid var(--bad) }
+    .input-row{ display:flex; align-items:center; gap:8px; margin-top:8px }
+    input[type=text]{ flex:1; border:1px solid #334155; background:#0a0f1a; color:var(--text); padding:12px 14px; border-radius:12px; font-size:18px }
+    .expert-grid{ display:grid; grid-template-columns:1fr; gap:10px; margin-top:8px }
+    @media(min-width:640px){ .expert-grid{ grid-template-columns:1fr 1fr } }
+    .field{ display:flex; flex-direction:column; gap:6px }
+    .field label{ font-size:13px; color:var(--muted) }
+    .status{ min-height:28px; font-weight:800 }
+    .status.ok{ color:var(--ok) } .status.bad{ color:var(--bad) }
+    .table{ width:100%; border-collapse:collapse; color:var(--text) }
+    .table th,.table td{ border-bottom:1px dashed #243244; padding:8px 6px; text-align:left; vertical-align:top }
+    footer{ color:var(--muted); font-size:13px; text-align:center }
+    /* Defensive visibility helper */
+    [data-vis="hidden"]{ display:none !important; }
   </style>
 </head>
 <body>
   <main class="app">
     <header class="card">
-      <h1>Swedish Irregular Verbs – Practice (bli → rida)</h1>
-      <p class="lead">10 questions per round · pick difficulty · review mistakes · last score saved locally.</p>
+      <h1 id="title">Ruotsin epäsäännölliset verbit – Kertauspeli</h1>
     </header>
 
     <section class="card">
-      <div class="controls">
-        <span>Difficulty:</span>
-        <label class="chip"><input type="radio" name="diff" value="easy" checked> Easy (multiple choice)</label>
-        <label class="chip"><input type="radio" name="diff" value="normal"> Normal (type answer)</label>
-        <label class="chip"><input type="radio" name="diff" value="hard"> Hard (any to any)</label>
-        <span class="pill" id="lastScore">No previous round</span>
-        <button class="btn right" id="startBtn">Start new round</button>
-        <button class="btn ghost" id="reviewLastBtn" title="Practice the mistakes from the last finished round">Practice last mistakes</button>
-        <button class="btn ghost" id="resetBtn" title="Clear saved last score">Reset saved score</button>
+      <div class="row">
+        <button class="flag" id="lang-fi" title="Suomi">
+          <svg viewBox="0 0 60 40" aria-hidden="true">
+            <rect width="60" height="40" fill="#fff"/>
+            <rect x="0" y="16" width="60" height="8" fill="#003580"/>
+            <rect x="16" y="0" width="8" height="40" fill="#003580"/>
+          </svg> FI
+        </button>
+        <button class="flag" id="lang-en" title="English">
+          <svg viewBox="0 0 60 40" aria-hidden="true">
+            <path fill="#012169" d="M0,0H60V40H0Z"/>
+            <path d="M0,0 60,40M60,0 0,40" stroke="#fff" stroke-width="8"/>
+            <path d="M0,0 60,40M60,0 0,40" stroke="#C8102E" stroke-width="4"/>
+            <path d="M30,0V40M0,20H60" stroke="#fff" stroke-width="10"/>
+            <path d="M30,0V40M0,20H60" stroke="#C8102E" stroke-width="6"/>
+          </svg> EN
+        </button>
+
+        <div class="spacer"></div>
+        <button class="btn" id="startBtn">Aloita uusi kierros</button>
+        <button class="btn ghost" id="reviewLastBtn">Harjoittele edelliset virheet</button>
+        <button class="btn ghost" id="resetBtn">Nollaa tallennettu tulos</button>
+        <span id="lastScore" class="muted" style="margin-left:4px"></span>
       </div>
+
+      <div class="row" style="margin-top:10px">
+        <div class="seg" id="diffSeg">
+          <button data-mode="easy" class="active">Helppo</button>
+          <button data-mode="normal">Perus</button>
+          <button data-mode="hard">Vaikea</button>
+          <button data-mode="expert">Ekspertti</button>
+        </div>
+      </div>
+
+      <div class="groups" id="groupButtons" style="margin-top:10px"></div>
     </section>
 
-    <section class="card" id="game" hidden>
-      <div class="flex">
-        <div class="pill" id="qpos">Q 1/10</div>
-        <div class="pill" id="scoreBox">Score 0/0</div>
-      </div>
-      <div class="prompt" id="prompt">Prompt will appear here</div>
-
-      <div class="input-row" id="typeRow">
-        <input type="text" id="answer" placeholder="Type your answer…" autocomplete="off" />
-        <button class="btn" id="submitBtn">Submit</button>
-        <button class="btn ghost" id="skipBtn" title="Reveal and move on">Skip</button>
+    <!-- Game -->
+    <section class="card" id="game" data-vis="hidden">
+      <div class="row">
+        <div class="pill" id="qpos">K 1/10</div>
+        <div class="pill" id="scoreBox">Pisteet 0/0</div>
       </div>
 
-      <div id="mcRow" hidden>
+      <div class="prompt" id="prompt">Kysymys tulee tähän</div>
+
+      <!-- Only one of these rows is visible at a time -->
+      <div class="input-row" id="typeRow" data-vis="hidden">
+        <input type="text" id="answer" placeholder="Kirjoita vastaus…" autocomplete="off" />
+        <button class="btn" id="submitBtn">Vastaa</button>
+        <button class="btn ghost" id="skipBtn">Ohita</button>
+      </div>
+
+      <div id="mcRow" data-vis="hidden">
         <div class="choices" id="choices"></div>
-        <div class="tiny">Tip: You can also press <span class="kbd">A</span>, <span class="kbd">B</span>, <span class="kbd">C</span>, <span class="kbd">D</span>.</div>
+        <div class="muted" id="mcTip">Vinkki: voit myös painaa A–D.</div>
+      </div>
+
+      <div id="expertRow" data-vis="hidden">
+        <div class="expert-grid" id="expertGrid"></div>
+        <div class="muted" id="expertHint">Kirjoita muodot täsmälleen oikein (å/ä/ö vaaditaan).</div>
+        <div class="row" style="margin-top:10px">
+          <button class="btn" id="expertSubmit">Vastaa</button>
+          <button class="btn ghost" id="expertSkip">Ohita</button>
+        </div>
       </div>
 
       <div class="status" id="status"></div>
-      <div class="tiny" id="hint">Å/Ä/Ö accepted; you can type A/A/O as well.</div>
+      <div class="muted" id="hint">Å/Ä/Ö täytyy kirjoittaa oikein – ei oikopolkuja!</div>
     </section>
 
-    <section class="card" id="results" hidden>
-      <h2>Round finished</h2>
+    <section class="card" id="results" data-vis="hidden">
+      <h2 id="roundFinished">Kierros valmis</h2>
       <p id="summary"></p>
-      <div class="flex">
-        <button class="btn" id="reviewBtn">Review this round's mistakes</button>
-        <button class="btn ghost" id="againBtn">Play again</button>
+      <div class="row">
+        <button class="btn" id="reviewBtn">Kertaa tämän kierroksen virheet</button>
+        <button class="btn ghost" id="againBtn">Pelaa uudelleen</button>
       </div>
     </section>
 
     <details class="card">
-      <summary><strong>Lexicon (bli → rida)</strong></summary>
+      <summary><strong id="lexiconTitle">Sanasto</strong></summary>
       <table class="table" id="lexicon"></table>
     </details>
 
-    <footer>Made for practice – data includes Finnish meanings to help recall.</footer>
+    <footer id="footer" class="muted">
+      Kaikille vapaa henkilökohtaiseen ja opetuskäyttöön - kaupallinen edelleenjakelu ilman lupaa on kielletty. Tekijä: Noam Silander - Koska opettajia ei huvittanut.
+    </footer>
   </main>
 
-  <script>
-    // ---------------------- Data ----------------------
-    const VERBS = [
-      { base: 'bli',    pres:'blir',   pret:['blev'],           supine:['blivit'],       fi:'tulla jksikin' },
-      { base: 'dricka', pres:'dricker',pret:['drack'],          supine:['druckit'],      fi:'juoda' },
-      { base: 'falla',  pres:'faller', pret:['föll'],           supine:['fallit'],       fi:'kaatua' },
-      { base: 'finnas', pres:'finns',  pret:['fanns'],          supine:['funnits'],      fi:'olla olemassa' },
-      { base: 'flyga',  pres:'flyger', pret:['flög'],           supine:['flugit'],       fi:'lentää' },
-      { base: 'få',     pres:'får',    pret:['fick'],           supine:['fått'],         fi:'saada' },
-      { base: 'förstå', pres:'förstår',pret:['förstod'],        supine:['förstått'],     fi:'ymmärtää' },
-      { base: 'ge',     pres:'ger',    pret:['gav'],            supine:['gett','givit'], fi:'antaa' },
-      { base: 'gråta',  pres:'gråter', pret:['grät'],           supine:['gråtit'],       fi:'itkeä' },
-      { base: 'gå',     pres:'går',    pret:['gick'],           supine:['gått'],         fi:'kävellä, mennä' },
-      { base: 'göra',   pres:'gör',    pret:['gjorde'],         supine:['gjort'],        fi:'tehdä' },
-      { base: 'ha',     pres:'har',    pret:['hade'],           supine:['haft'],         fi:'olla, omistaa' },
-      { base: 'heta',   pres:'heter',  pret:['hette'],          supine:['hetat'],        fi:'olla nimeltään' },
-      { base: 'komma',  pres:'kommer', pret:['kom'],            supine:['kommit'],       fi:'tulla' },
-      { base: 'kunna',  pres:'kan',    pret:['kunde'],          supine:['kunnat'],       fi:'osata, voida' },
-      { base: 'le',     pres:'ler',    pret:['log'],            supine:['lett'],         fi:'hymyillä' },
-      { base: 'ligga',  pres:'ligger', pret:['låg'],            supine:['legat'],        fi:'maata, sijaita' },
-      { base: 'låta',   pres:'låter',  pret:['lät'],            supine:['låtit'],        fi:'kuulostaa' },
-      { base: 'lägga',  pres:'lägger', pret:['lade','la'],      supine:['lagt'],         fi:'laittaa, asettaa' },
-      { base: 'rida',   pres:'rider',  pret:['red'],            supine:['ridit'],        fi:'ratsastaa' },
-    ];
 
-    const LABELS = {
-      base: "infinitive",
-      pres: "present",
-      pret: "preterite (imperfekti)",
-      supine: "supine (4th form)",
-      fi: "Finnish meaning",
-    };
+<script defer>
+/* ======= DATA ======= */
+const VERBS = [
+  { base:'bli', pres:'blir', pret:['blev'], supine:['blivit'], fi:'tulla joksikin', en:'become' },
+  { base:'dricka', pres:'dricker', pret:['drack'], supine:['druckit'], fi:'juoda', en:'drink' },
+  { base:'falla', pres:'faller', pret:['föll'], supine:['fallit'], fi:'kaatua', en:'fall' },
+  { base:'finnas', pres:'finns', pret:['fanns'], supine:['funnits'], fi:'olla olemassa', en:'exist' },
+  { base:'flyga', pres:'flyger', pret:['flög'], supine:['flugit'], fi:'lentää', en:'fly' },
+  { base:'få', pres:'får', pret:['fick'], supine:['fått'], fi:'saada', en:'get/receive' },
+  { base:'förstå', pres:'förstår', pret:['förstod'], supine:['förstått'], fi:'ymmärtää', en:'understand' },
+  { base:'ge', pres:'ger', pret:['gav'], supine:['gett','givit'], fi:'antaa', en:'give' },
+  { base:'gråta', pres:'gråter', pret:['grät'], supine:['gråtit'], fi:'itkeä', en:'cry' },
+  { base:'gå', pres:'går', pret:['gick'], supine:['gått'], fi:'kävellä, mennä', en:'go/walk' },
+  { base:'göra', pres:'gör', pret:['gjorde'], supine:['gjort'], fi:'tehdä', en:'do/make' },
+  { base:'ha', pres:'har', pret:['hade'], supine:['haft'], fi:'olla, omistaa', en:'have' },
+  { base:'heta', pres:'heter', pret:['hette'], supine:['hetat'], fi:'olla nimeltään', en:'be called' },
+  { base:'komma', pres:'kommer', pret:['kom'], supine:['kommit'], fi:'tulla', en:'come' },
+  { base:'kunna', pres:'kan', pret:['kunde'], supine:['kunnat'], fi:'osata, voida', en:'can/be able to' },
+  { base:'le', pres:'ler', pret:['log'], supine:['lett'], fi:'hymyillä', en:'smile' },
+  { base:'ligga', pres:'ligger', pret:['låg'], supine:['legat'], fi:'maata, sijaita', en:'lie; be situated' },
+  { base:'låta', pres:'låter', pret:['lät'], supine:['låtit'], fi:'kuulostaa', en:'sound' },
+  { base:'lägga', pres:'lägger', pret:['lade','la'], supine:['lagt'], fi:'laittaa, asettaa', en:'put/lay' },
+  { base:'rida', pres:'rider', pret:['red'], supine:['ridit'], fi:'ratsastaa', en:'ride' },
+  { base:'se', pres:'ser', pret:['såg'], supine:['sett'], fi:'nähdä', en:'see' },
+  { base:'sitta', pres:'sitter', pret:['satt'], supine:['suttit'], fi:'istua', en:'sit' },
+  { base:'sjunga', pres:'sjunger', pret:['sjöng'], supine:['sjungit'], fi:'laulaa', en:'sing' },
+  { base:'sjunka', pres:'sjunker', pret:['sjönk'], supine:['sjunkit'], fi:'upota', en:'sink' },
+  { base:'skina', pres:'skiner', pret:['sken'], supine:['skinit'], fi:'paistaa, loistaa', en:'shine' },
+  { base:'skriva', pres:'skriver', pret:['skrev'], supine:['skrivit'], fi:'kirjoittaa', en:'write' },
+  { base:'sova', pres:'sover', pret:['sov'], supine:['sovit'], fi:'nukkua', en:'sleep' },
+  { base:'springa', pres:'springer', pret:['sprang'], supine:['sprungit'], fi:'juosta', en:'run' },
+  { base:'stiga', pres:'stiger', pret:['steg'], supine:['stigit'], fi:'nousta', en:'rise/climb' },
+  { base:'stå', pres:'står', pret:['stod'], supine:['stått'], fi:'seisoa', en:'stand' },
+  { base:'säga', pres:'säger', pret:['sade','sa'], supine:['sagt'], fi:'sanoa', en:'say' },
+  { base:'sälja', pres:'säljer', pret:['sålde'], supine:['sålt'], fi:'myydä', en:'sell' },
+  { base:'ta', pres:'tar', pret:['tog'], supine:['tagit'], fi:'ottaa', en:'take' },
+  { base:'vara', pres:'är', pret:['var'], supine:['varit'], fi:'olla', en:'be' },
+  { base:'veta', pres:'vet', pret:['visste'], supine:['vetat'], fi:'tietää', en:'know' },
+  { base:'vilja', pres:'vill', pret:['ville'], supine:['velat'], fi:'haluta', en:'want' },
+  { base:'vinna', pres:'vinner', pret:['vann'], supine:['vunnit'], fi:'voittaa', en:'win' },
+  { base:'äta', pres:'äter', pret:['åt'], supine:['ätit'], fi:'syödä', en:'eat' },
+];
+const GROUPS = []; for(let i=0;i<VERBS.length;i+=10){ GROUPS.push(VERBS.slice(i,i+10)); }
 
-    const FIELD_KEYS = ["base","pres","pret","supine","fi"];
+/* ======= STATE ======= */
+const state = { lang:'fi', mode:'easy', groupIndex:0, round:[], answers:[], idx:0, reviewing:false };
+const store = { saveLast(r){localStorage.setItem('sv_last',JSON.stringify(r));},
+  loadLast(){try{return JSON.parse(localStorage.getItem('sv_last')||'null');}catch{return null}},
+  clear(){localStorage.removeItem('sv_last');} };
 
-    // ---------------------- Helpers ----------------------
-    const $ = sel => document.querySelector(sel);
-    const $$ = sel => Array.from(document.querySelectorAll(sel));
-    const rand = arr => arr[Math.floor(Math.random()*arr.length)];
-    const toArr = x => Array.isArray(x) ? x : [x];
+/* ======= UTIL ======= */
+const $=s=>document.querySelector(s), $$=s=>Array.from(document.querySelectorAll(s));
+const toArr=x=>Array.isArray(x)?x:[x];
+const rand=arr=>arr[Math.floor(Math.random()*arr.length)];
+const norm=s=>(s||'').trim().toLowerCase().replace(/ /g,'');
+const isCorrect=(u,answers)=>toArr(answers).some(a=>norm(a)===norm(u));
 
-    function normalize(s){
-      return (s||"").trim().toLowerCase()
-        .replaceAll("å","a").replaceAll("ä","a").replaceAll("ö","o")
-        .replaceAll("é","e").replaceAll("ü","u").replaceAll(" ", "");
+/* ======= I18N ======= */
+const I18N = {
+  fi:{
+    title:"Ruotsin epäsäännölliset verbit – Kertauspeli",
+    start:"Aloita uusi kierros", reviewLast:"Harjoittele edelliset virheet", reset:"Nollaa tallennettu tulos",
+    roundFinished:"Kierros valmis", reviewThisRound:"Kertaa tämän kierroksen virheet", playAgain:"Pelaa uudelleen",
+    tipMC:"Vinkki: voit myös painaa A–D.", hint:"Å/Ä/Ö täytyy kirjoittaa oikein – ei oikopolkuja!",
+    lexiconTitle:"Sanasto",
+    labels:{ base:"perusmuoto", pres:"preesens", pret:"imperfekti", supine:"supiini", fi:"suomeksi", en:"englanniksi" },
+    promptBasic:(srcName,srcVal,dstName)=>`Mikä on verbin ${srcName} <b>${srcVal}</b> ${dstName}?`,
+    promptFiAll:fi=>`Kirjoita ruotsiksi: <b>${fi}</b> – kaikki muodot (infinitiivi, preesens, imperfekti, supiini).`,
+    promptSwComplete:(srcName,srcVal)=>`Täydennä (${srcName}): <b>${srcVal}</b>. Kirjoita puuttuvat muodot ja merkitys suomeksi.`,
+    noPrev:"Ei aiempaa kierrosta", skipped:"Ohitettu. Oikea: ", qLabel:"K", scoreLabel:"Pisteet",
+    correct:"Oikein!", wrong:r=>`Väärin. Oikea: ${r}`, nothingToReview:"Ei kerrattavaa – kaikki oikein!",
+    noMistakesSaved:"Ei tallennettuja virheitä edelliseltä kierrokselta.", clearConfirm:"Poistetaanko tallennettu tulos?",
+    groupWord:"Ryhmä"
+  },
+  en:{
+    title:"Swedish Irregular Verbs – Practice",
+    start:"Start new round", reviewLast:"Practice last mistakes", reset:"Reset saved score",
+    roundFinished:"Round finished", reviewThisRound:"Review this round's mistakes", playAgain:"Play again",
+    tipMC:"Tip: You can also press A–D.", hint:"Å/Ä/Ö must be typed as-is. No cheating!",
+    lexiconTitle:"Lexicon",
+    labels:{ base:"infinitive", pres:"present", pret:"preterite", supine:"supine", fi:"Finnish", en:"English" },
+    promptBasic:(srcName,srcVal,dstName)=>`Given ${srcName} <b>${srcVal}</b>, what is the <b>${dstName}</b>?`,
+    promptFiAll:fi=>`Give all Swedish forms for Finnish verb <b>${fi}</b> (infinitive, present, preterite, supine).`,
+    promptSwComplete:(srcName,srcVal)=>`Complete (${srcName}): <b>${srcVal}</b>. Enter the missing forms and the Finnish meaning.`,
+    noPrev:"No previous round", skipped:"Skipped. Correct: ", qLabel:"Q", scoreLabel:"Score",
+    correct:"Correct!", wrong:r=>`Wrong. Correct: ${r}`, nothingToReview:"Nothing to review – all correct!",
+    noMistakesSaved:"No mistakes saved from the last round.", clearConfirm:"Clear saved last score?",
+    groupWord:"Group"
+  }
+};
+function labelFor(f){ return I18N[state.lang].labels[f] || f; }
+
+/* ======= RENDER ======= */
+function setVis(node, show){
+  node.setAttribute('data-vis', show ? 'shown' : 'hidden');
+}
+function renderLanguage(){
+  $("#title").textContent = I18N[state.lang].title;
+  $("#startBtn").textContent = I18N[state.lang].start;
+  $("#reviewLastBtn").textContent = I18N[state.lang].reviewLast;
+  $("#resetBtn").textContent = I18N[state.lang].reset;
+  $("#roundFinished").textContent = I18N[state.lang].roundFinished;
+  $("#reviewBtn").textContent = I18N[state.lang].reviewThisRound;
+  $("#againBtn").textContent = I18N[state.lang].playAgain;
+  $("#mcTip").textContent = I18N[state.lang].tipMC;
+  $("#hint").textContent = I18N[state.lang].hint;
+  $("#lexiconTitle").textContent = I18N[state.lang].lexiconTitle;
+  $("#lang-fi").classList.toggle("active", state.lang==='fi');
+  $("#lang-en").classList.toggle("active", state.lang==='en');
+  renderDiffLabels(); renderGroupButtons(); renderLexicon(); renderLastBadge();
+  if(state.round.length) renderQuestion();
+}
+function renderDiffLabels(){
+  const labs = state.lang==='fi' ? ['Helppo','Perus','Vaikea','Ekspertti'] : ['Easy','Normal','Hard','Expert'];
+  $$("#diffSeg button").forEach((btn,i)=>btn.textContent = labs[i]);
+  $$("#diffSeg button").forEach(btn=>btn.classList.toggle('active', btn.dataset.mode===state.mode));
+}
+function renderGroupButtons(){
+  const t=I18N[state.lang];
+  const wrap=$("#groupButtons"); wrap.innerHTML="";
+  GROUPS.forEach((g,idx)=>{
+    const b=document.createElement("button");
+    b.className="groupBtn"+(idx===state.groupIndex?" active":"");
+    const start=idx*10+1, end=start+g.length-1;
+    b.textContent=`${t.groupWord} ${idx+1} (${start}–${end})`;
+    b.addEventListener('click',()=>{state.groupIndex=idx; renderGroupButtons(); renderLexicon();});
+    wrap.appendChild(b);
+  });
+}
+function renderLexicon(){
+  const t=I18N[state.lang].labels, group=GROUPS[state.groupIndex];
+  $("#lexicon").innerHTML = `<tr><th>${t.base}</th><th>${t.pres}</th><th>${t.pret}</th><th>${t.supine}</th><th>${state.lang==='fi'?t.fi:t.en}</th></tr>` +
+    group.map(v=>`<tr><td><b>${v.base}</b></td><td>${toArr(v.pres).join(' / ')}</td><td>${toArr(v.pret).join(' / ')}</td><td>${toArr(v.supine).join(' / ')}</td><td>${state.lang==='fi'?v.fi:v.en}</td></tr>`).join("");
+}
+
+/* ======= ROUND / QUESTIONS ======= */
+function pairsForMode(){
+  if(state.mode==='hard'){
+    const keys=['base','pres','pret','supine', state.lang==='fi'?'fi':'en'];
+    const out=[]; for(const a of keys){ for(const b of keys){ if(a!==b) out.push([a,b]); } } return out;
+  }
+  return [['base','pres'],['base','pret'],['base','supine']];
+}
+function sampleOptions(correct,field,k=4,groupArray){
+  const pool = groupArray.map(v=>toArr(v[field])[0]).filter(x=>norm(x)!==norm(correct));
+  const picks=[]; while(picks.length<Math.min(k-1,pool.length)){ const p=rand(pool); if(!picks.includes(p)) picks.push(p); }
+  const opts=[...picks,correct]; for(let i=opts.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [opts[i],opts[j]]=[opts[j],opts[i]]; }
+  return opts;
+}
+function newRound(fromWrong=null){
+  state.reviewing=false; state.answers=[]; state.idx=0;
+  const group=GROUPS[state.groupIndex]; const items=[];
+  if(state.mode==='expert'){
+    for(let i=0;i<10;i++){
+      const v=rand(group); const pick=Math.random()<0.5?'fi':rand(['base','pres','pret','supine']);
+      if(pick==='fi') items.push({ v, mode:'expert', clue:'fi', need:['base','pres','pret','supine'] });
+      else { const all=['base','pres','pret','supine']; const missing=all.filter(x=>x!==pick); items.push({ v, mode:'expert', clue:pick, need:[...missing,'fi'] }); }
     }
-
-    function isCorrect(user, answers){
-      const u = normalize(user);
-      return answers.some(a => normalize(a) === u);
-    }
-
-    function sampleOptions(correct, field, k=4){
-      // get pool of values for same field
-      const pool = VERBS.map(v => {
-        const val = v[field];
-        return Array.isArray(val) ? val[0] : val;
-      }).filter(x => normalize(x) !== normalize(correct));
-      const picks = [];
-      while(picks.length < Math.min(k-1, pool.length)){
-        const p = rand(pool);
-        if(!picks.includes(p)) picks.push(p);
-      }
-      const opts = [...picks, correct];
-      // shuffle
-      for(let i=opts.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [opts[i],opts[j]]=[opts[j],opts[i]]; }
-      return opts;
-    }
-
-    function formatQ(v, src, dst){
-      const srcVal = toArr(v[src])[0];
-      return `Given <b>${LABELS[src]}</b> <b>${srcVal}</b>, what is the <b>${LABELS[dst]}</b>?`;
-    }
-
-    // ---------------------- Game state ----------------------
-    const store = {
-      saveLast(result){
-        localStorage.setItem("sv_last", JSON.stringify(result));
-      },
-      loadLast(){
-        try { return JSON.parse(localStorage.getItem("sv_last")||"null"); } catch { return null; }
-      },
-      clear(){ localStorage.removeItem("sv_last"); }
-    };
-
-    const state = {
-      mode: "easy",
-      round: [],        // [{v, src, dst}]
-      answers: [],      // [{ok, right, user, v, src, dst}]
-      idx: 0,
-      reviewing: false,
-    };
-
-    function setMode(val){ state.mode = val; }
-
-    function buildPairs(){
-      if(state.mode === "hard"){
-        const pairs = [];
-        for(const a of FIELD_KEYS){
-          for(const b of FIELD_KEYS){
-            if(a!==b) pairs.push([a,b]);
-          }
-        }
-        return pairs;
-      }
-      // normal/easy: from base to others
-      return [["base","pres"],["base","pret"],["base","supine"]];
-    }
-
-    function newRound(fromWrong=null){
-      state.reviewing = false;
-      state.answers = [];
-      state.idx = 0;
-      const pairs = buildPairs();
-      let items = [];
-      if(fromWrong && fromWrong.length){
-        // practice only given items
-        items = fromWrong.map(w => ({ v: w.v, src: w.src, dst: w.dst }));
-      } else {
-        for(let i=0;i<10;i++){
-          const v = rand(VERBS);
-          const [src,dst] = rand(pairs);
-          items.push({v, src, dst});
-        }
-      }
-      state.round = items;
-      $("#results").hidden = true;
-      $("#game").hidden = false;
-      renderQuestion();
-    }
-
-    function renderQuestion(){
-      const q = state.round[state.idx];
-      if(!q){ return showResults(); }
-      $("#qpos").textContent = `Q ${state.idx+1}/${state.round.length}`;
-      $("#scoreBox").textContent = `Score ${state.answers.filter(a=>a.ok).length}/${state.answers.length}`;
-      $("#prompt").innerHTML = formatQ(q.v, q.src, q.dst);
-      $("#status").textContent = "";
-      $("#answer").value = "";
-      $("#answer").focus();
-
-      const isMC = state.mode === "easy" && !state.reviewing;
-      $("#typeRow").hidden = isMC;
-      $("#mcRow").hidden = !isMC;
-      $("#choices").innerHTML = "";
-      if(isMC){
-        const right = toArr(q.v[q.dst])[0];
-        const opts = sampleOptions(right, q.dst, 4);
-        const letters = ["A","B","C","D"];
-        opts.forEach((txt, i) => {
-          const btn = document.createElement("button");
-          btn.className = "choice";
-          btn.innerHTML = `<span class="pill" style="margin-right:8px">${letters[i]}</span> ${txt}`;
-          btn.addEventListener("click", () => grade(txt));
-          $("#choices").appendChild(btn);
-        });
-        // keyboard shortcuts
-        window.onkeydown = (e)=>{
-          const k = e.key.toUpperCase();
-          const pos = letters.indexOf(k);
-          if(pos>-1 && $("#mcRow").hidden===false){
-            const opt = opts[pos];
-            grade(opt);
-          }
-        };
-      } else {
-        window.onkeydown = (e)=>{
-          if(e.key==="Enter" && !$("#typeRow").hidden) submit();
-        };
-      }
-    }
-
-    function submit(){ grade($("#answer").value); }
-    $("#submitBtn").addEventListener("click", submit);
-    $("#skipBtn").addEventListener("click", () => {
-      const q = state.round[state.idx];
-      const right = toArr(q.v[q.dst]).join(" / ");
-      $("#status").className = "status bad";
-      $("#status").textContent = `Skipped. Correct: ${right}`;
-      state.answers.push({ok:false, right, user:"", v:q.v, src:q.src, dst:q.dst});
-      nextSoon();
+  } else if(fromWrong && fromWrong.length){
+    fromWrong.forEach(w=>{
+      items.push({ v: group.find(x=>x.base===(w.v?.base||w.base))||VERBS.find(x=>x.base===(w.v?.base||w.base)), src:w.src, dst:w.dst, mode:'typed' });
     });
+  } else {
+    const pairs=pairsForMode();
+    for(let i=0;i<10;i++){ const v=rand(group); const [src,dst]=rand(pairs); items.push({ v, src, dst, mode: state.mode==='easy'?'easy':'typed' }); }
+  }
+  state.round=items;
+  setVis(document.querySelector('#results'), false);
+  setVis(document.querySelector('#game'), true);
+  renderQuestion();
+}
+function renderQuestion(){
+  const t=I18N[state.lang]; const q=state.round[state.idx]; if(!q){ showResults(); return; }
+  $("#qpos").textContent = `${t.qLabel} ${state.idx+1}/${state.round.length}`;
+  $("#scoreBox").textContent = `${t.scoreLabel} ${state.answers.filter(a=>a.ok).length}/${state.answers.length}`;
+  $("#status").textContent=""; $("#choices").innerHTML=""; $("#expertGrid").innerHTML="";
+  const qmode = q.mode || state.mode;
 
-    function grade(userInput){
-      const q = state.round[state.idx];
-      const rightList = toArr(q.v[q.dst]);
-      const ok = isCorrect(userInput, rightList);
-      const right = rightList.join(" / ");
-      state.answers.push({ ok, right, user:userInput, v:q.v, src:q.src, dst:q.dst });
+  // Hard hide/show to avoid any overlap
+  setVis(document.querySelector('#expertRow'), qmode==='expert');
+  setVis(document.querySelector('#mcRow'),     qmode==='easy');
+  setVis(document.querySelector('#typeRow'),   qmode==='typed');
 
-      if(state.mode==="easy" && !state.reviewing){
-        // mark choices
-        const nodes = $$("#choices .choice");
-        for(const n of nodes){
-          const txt = n.textContent.trim().replace(/^[A-D]\s*/,"");
-          if(isCorrect(txt, rightList)) n.classList.add("correct");
-          if(!ok && normalize(txt)===normalize(userInput)) n.classList.add("wrong");
-          n.disabled = true;
-        }
-      }
-
-      $("#status").className = "status " + (ok ? "ok" : "bad");
-      $("#status").textContent = ok ? "Correct!" : `Wrong. Correct: ${right}`;
-      nextSoon();
+  if(qmode==='expert'){
+    if(q.clue==='fi'){
+      $("#prompt").innerHTML = t.promptFiAll(q.v.fi);
+      ['base','pres','pret','supine'].forEach(addExpertField);
+    } else {
+      const srcVal = toArr(q.v[q.clue])[0];
+      $("#prompt").innerHTML = t.promptSwComplete(labelFor(q.clue), srcVal);
+      q.need.forEach(addExpertField);
     }
-
-    function nextSoon(){
-      setTimeout(() => {
-        state.idx++;
-        if(state.idx < state.round.length) renderQuestion();
-        else showResults();
-      }, 650);
-    }
-
-    function showResults(){
-      $("#game").hidden = true;
-      $("#results").hidden = false;
-      const total = state.answers.length;
-      const correct = state.answers.filter(a=>a.ok).length;
-      const wrong = state.answers.filter(a=>!a.ok);
-      const modeName = state.mode[0].toUpperCase()+state.mode.slice(1);
-      const last = store.loadLast();
-      let improvement = "";
-      if(last && typeof last.score==="number" && typeof last.total==="number"){
-        const diff = correct - last.score;
-        const sign = diff>=0 ? "+" : "";
-        improvement = ` (vs last: ${last.difficulty} ${last.score}/${last.total}, ${sign}${diff})`;
-      }
-      $("#summary").innerHTML = `Score: <b>${correct}/${total}</b> · Difficulty: <b>${modeName}</b>${improvement}`;
-
-      // Save last
-      const saved = {
-        score: correct, total,
-        difficulty: modeName,
-        time: new Date().toISOString(),
-        wrong: wrong.map(w => ({ base:w.v.base, src:w.src, dst:w.dst, right:w.right }))
-      };
-      store.saveLast(saved);
-      renderLastBadge();
-
-      // Hook review button
-      $("#reviewBtn").onclick = () => {
-        if(!wrong.length){ alert("Nothing to review – all correct!"); return; }
-        startReview(wrong);
-      };
-      $("#againBtn").onclick = () => newRound();
-    }
-
-    function startReview(wrongList){
-      // Build items from wrong list (type answers only)
-      state.reviewing = true;
-      state.idx = 0;
-      state.answers = [];
-      state.round = wrongList.map(w => {
-        // `w` may be objects from this round or from saved store
-        let v = VERBS.find(x => x.base === (w.v?.base || w.base));
-        return { v, src: w.src, dst: w.dst };
+  } else if(qmode==='easy'){
+    const srcVal = toArr(q.v[q.src])[0];
+    $("#prompt").innerHTML = t.promptBasic(labelFor(q.src), srcVal, labelFor(q.dst));
+    const right = toArr(q.v[q.dst])[0];
+    const opts = sampleOptions(right, q.dst, 4, GROUPS[state.groupIndex]);
+    const letters=['A','B','C','D'];
+    opts.forEach((txt,i)=>{
+      const b=document.createElement('button'); b.className='choice'; b.innerHTML=`<span class="pill" style="margin-right:8px">${letters[i]}</span> ${txt}`;
+      b.addEventListener('click',()=>grade(txt)); $("#choices").appendChild(b);
+    });
+    window.onkeydown=(e)=>{ const k=e.key.toUpperCase(); const pos=letters.indexOf(k); if(pos>-1 && document.querySelector('#mcRow').getAttribute('data-vis')==='shown'){ grade(opts[pos]); } };
+  } else { // typed
+    const srcVal = toArr(q.v[q.src])[0];
+    $("#prompt").innerHTML = t.promptBasic(labelFor(q.src), srcVal, labelFor(q.dst));
+    $("#answer").value=""; $("#answer").focus();
+    window.onkeydown=(e)=>{ if(e.key==='Enter' && document.querySelector('#typeRow').getAttribute('data-vis')==='shown') submit(); };
+  }
+}
+function addExpertField(field){
+  const wrap=document.createElement('div'); wrap.className='field';
+  const lab=document.createElement('label'); lab.textContent=labelFor(field);
+  const inp=document.createElement('input'); inp.type='text'; inp.dataset.field=field; inp.placeholder = state.lang==='fi'?'Kirjoita tähän…':'Type here…';
+  inp.style.border='1px solid #334155'; inp.style.background='#0a0f1a'; inp.style.color='var(--text)';
+  inp.style.padding='12px 14px'; inp.style.borderRadius='12px'; inp.style.fontSize='18px';
+  wrap.appendChild(lab); wrap.appendChild(inp); $("#expertGrid").appendChild(wrap);
+}
+function submit(){ grade($("#answer").value); }
+function grade(userInput){
+  const t=I18N[state.lang]; const q=state.round[state.idx]; const qmode=q.mode||state.mode; let ok=false, right="";
+  if(qmode==='expert'){
+    const inputs=Array.from($("#expertGrid").querySelectorAll("input")); const fields=inputs.map(i=>i.dataset.field);
+    ok = fields.every((f,i)=>isCorrect(inputs[i].value, q.v[f]));
+    right = fields.map(f=> f==='fi'? q.v.fi : toArr(q.v[f]).join(" / ")).join(" | ");
+  } else {
+    const rightList = toArr(q.v[q.dst]);
+    ok = isCorrect(userInput, rightList); right = rightList.join(" / ");
+    if(qmode==='easy' && !state.reviewing){
+      $$("#choices .choice").forEach(n=>{
+        const raw=n.textContent.trim(); const txt=raw.replace(/^[A-D]\s*/,'');
+        if(isCorrect(txt, rightList)) n.classList.add("correct");
       });
-      $("#results").hidden = true;
-      $("#game").hidden = false;
-      $("#mcRow").hidden = true; // typed only in review
-      renderQuestion();
     }
+  }
+  state.answers.push({ ok, right, user:Array.isArray(userInput)?userInput.join(" | "):userInput, v:q.v, src:q.src, dst:q.dst });
+  $("#status").className="status "+(ok?"ok":"bad"); $("#status").textContent = ok ? t.correct : t.wrong(right);
+  setTimeout(()=>{ state.idx++; if(state.idx<state.round.length) renderQuestion(); else showResults(); }, 700);
+}
+function showResults(){
+  const t=I18N[state.lang];
+  setVis(document.querySelector('#game'), false);
+  setVis(document.querySelector('#results'), true);
+  const total=state.answers.length, correct=state.answers.filter(a=>a.ok).length, wrong=state.answers.filter(a=>!a.ok);
+  const modeName=$$("#diffSeg button").find(b=>b.dataset.mode===state.mode)?.textContent||"";
+  const last=store.loadLast(); let improvement="";
+  if(last && typeof last.score==='number'){ const diff=correct-last.score; const sign=diff>=0?"+":""; improvement=` (${last.difficulty} ${last.score}/${last.total}, ${sign}${diff})`; }
+  $("#summary").innerHTML = `${t.scoreLabel}: <b>${correct}/${total}</b> · ${t.qLabel} 10 · <b>${modeName}</b>${improvement}`;
+  store.saveLast({ score:correct, total, difficulty:modeName, time:new Date().toISOString(), wrong:wrong.map(w=>({base:w.v.base,src:w.src,dst:w.dst,right:w.right})), groupIndex:state.groupIndex });
+  renderLastBadge();
+  $("#reviewBtn").onclick=()=>{ if(!wrong.length){ alert(t.nothingToReview); return; } startReview(wrong); };
+  $("#againBtn").onclick=()=>newRound();
+}
+function startReview(wrongList){
+  state.reviewing=true; state.idx=0; state.answers=[];
+  state.round = wrongList.map(w=>{ const v=GROUPS[state.groupIndex].find(x=>x.base===(w.v?.base||w.base))||VERBS.find(x=>x.base===(w.v?.base||w.base)); return { v, src:w.src, dst:w.dst, mode:'typed' }; });
+  setVis(document.querySelector('#results'), false);
+  setVis(document.querySelector('#game'), true);
+  renderQuestion();
+}
 
-    function renderLastBadge(){
-      const last = store.loadLast();
-      if(last){
-        $("#lastScore").textContent = `${last.difficulty} ${last.score}/${last.total} — ${new Date(last.time).toLocaleString()}`;
-      } else {
-        $("#lastScore").textContent = "No previous round";
-      }
-    }
+/* ======= LAST BADGE ======= */
+function renderLastBadge(){
+  const t=I18N[state.lang]; const last=store.loadLast();
+  if(last){ const d=new Date(last.time); const hh=String(d.getHours()).padStart(2,'0'); const mm=String(d.getMinutes()).padStart(2,'0');
+    $("#lastScore").textContent = `· ${last.difficulty} ${last.score}/${last.total} · ${hh}:${mm}`; $("#lastScore").title=d.toLocaleString();
+  } else { $("#lastScore").textContent=`· ${t.noPrev}`; }
+}
 
-    // --------- Lexicon table ----------
-    function buildLexicon(){
-      const table = $("#lexicon");
-      table.innerHTML = `<tr>
-        <th>Infinitive</th><th>Present</th><th>Preterite</th><th>Supine</th><th>Finnish</th>
-      </tr>` + VERBS.map(v => `<tr>
-        <td><b>${v.base}</b></td>
-        <td>${toArr(v.pres).join(" / ")}</td>
-        <td>${toArr(v.pret).join(" / ")}</td>
-        <td>${toArr(v.supine).join(" / ")}</td>
-        <td>${v.fi}</td>
-      </tr>`).join("");
-    }
+/* ======= EVENTS ======= */
+$("#diffSeg").addEventListener('click',e=>{ const btn=e.target.closest('button[data-mode]'); if(!btn) return; state.mode=btn.dataset.mode; renderDiffLabels(); });
+$("#startBtn").addEventListener('click',()=>newRound());
+$("#reviewLastBtn").addEventListener('click',()=>{ const t=I18N[state.lang], last=store.loadLast(); if(!last||!last.wrong||!last.wrong.length){ alert(t.noMistakesSaved); return; } if(typeof last.groupIndex==='number'){ state.groupIndex=last.groupIndex; renderGroupButtons(); renderLexicon(); } startReview(last.wrong); });
+$("#resetBtn").addEventListener('click',()=>{ const t=I18N[state.lang]; if(confirm(t.clearConfirm)){ store.clear(); renderLastBadge(); } });
+$("#submitBtn").addEventListener('click',()=>submit());
+$("#skipBtn").addEventListener('click',()=>{ const t=I18N[state.lang]; const q=state.round[state.idx]; const qmode=q.mode||state.mode;
+  let right=""; if(qmode==='expert'){ if(q.clue==='fi'){ right=['base','pres','pret','supine'].map(f=>toArr(q.v[f]).join(' / ')).join(' | '); } else { right=q.need.map(f=> f==='fi'? q.v.fi : toArr(q.v[f]).join(' / ')).join(' | '); } }
+  else { right=toArr(q.v[q.dst]).join(' / '); }
+  $("#status").className="status bad"; $("#status").textContent=t.skipped + right;
+  state.answers.push({ ok:false, right, user:'', v:q.v, src:q.src, dst:q.dst });
+  setTimeout(()=>{ state.idx++; if(state.idx<state.round.length) renderQuestion(); else showResults(); }, 700);
+});
+$("#expertSkip").addEventListener('click',()=>$("#skipBtn").click());
+$("#expertSubmit").addEventListener('click',()=>{ grade(Array.from($("#expertGrid").querySelectorAll('input')).map(i=>i.value)); });
+$("#lang-en").addEventListener('click',()=>{ state.lang='en'; renderLanguage(); });
+$("#lang-fi").addEventListener('click',()=>{ state.lang='fi'; renderLanguage(); });
 
-    // --------- Wire up ----------
-    $("#startBtn").addEventListener("click", () => {
-      const checked = document.querySelector('input[name="diff"]:checked');
-      setMode(checked.value);
-      newRound();
-    });
-    $("#reviewLastBtn").addEventListener("click", () => {
-      const last = store.loadLast();
-      if(!last || !last.wrong || !last.wrong.length){
-        alert("No mistakes saved from the last round.");
-        return;
-      }
-      startReview(last.wrong);
-    });
-    $("#resetBtn").addEventListener("click", () => {
-      if(confirm("Clear saved last score?")){ store.clear(); renderLastBadge(); }
-    });
+// Init
+renderGroupButtons(); renderLexicon(); renderLanguage();
+</script>
 
-    $("#submitBtn").addEventListener("click", submit);
-    $("#answer").addEventListener("keyup", e => { if(e.key==="Enter") submit(); });
-
-    buildLexicon();
-    renderLastBadge();
-  </script>
 </body>
 </html>
